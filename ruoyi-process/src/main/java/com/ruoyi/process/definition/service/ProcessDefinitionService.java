@@ -5,6 +5,7 @@ import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.process.general.mapper.ProcessMapper;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.mapper.SysUserMapper;
 import org.activiti.engine.IdentityService;
@@ -44,6 +45,9 @@ public class ProcessDefinitionService {
     private SysUserMapper userMapper;
 
     @Autowired
+    private ProcessMapper processMapper;
+
+    @Autowired
     private IdentityService identityService;
 
 	@Transactional
@@ -58,6 +62,21 @@ public class ProcessDefinitionService {
 
     public List<Task> getTasks(String assignee) {
         return taskService.createTaskQuery().taskAssignee(assignee).list();
+    }
+
+    /**
+     * 根据流程id 获取ModelerId
+     * @param id
+     * @return
+     */
+    public String getModelerById(String id){
+         List<String> list= processMapper.selectModelIdfromId(id);
+         if(list!=null){
+             return list.get(0);
+         }else{
+             return "";
+         }
+
     }
 
     /**

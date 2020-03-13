@@ -23,6 +23,7 @@ import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.process.definition.service.ProcessDefinitionService;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.editor.constants.ModelDataJsonConstants;
@@ -33,6 +34,10 @@ import org.activiti.engine.impl.persistence.entity.ModelEntityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ModelQuery;
+import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.image.ProcessDiagramGenerator;
+import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -50,10 +55,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,6 +72,9 @@ public class ModelEditorJsonRestResource extends BaseController implements Model
 
   @Autowired
   private RepositoryService repositoryService;
+
+    @Autowired
+    private ProcessDefinitionService processDefinitionService;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -218,32 +225,66 @@ public class ModelEditorJsonRestResource extends BaseController implements Model
     /**
      * 导出model的xml文件
      */
-    @RequestMapping(value = "/process/modeler/export/{modelId}")
-    public void export(@PathVariable("modelId") String modelId, HttpServletResponse response) {
+    @RequestMapping(value = "/process/modeler/export/{modelId}/{type}")
+    public void export(@PathVariable("modelId") String modelId,@PathVariable("type") String type, HttpServletResponse response) {
         try {
-            Model modelData = repositoryService.getModel(modelId);
-            BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
-            JsonNode editorNode = new ObjectMapper().readTree(repositoryService.getModelEditorSource(modelData.getId()));
-            BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(editorNode);
+            if(type.equals("01")){//bpmn 文件
+                //重新获取modelerId
+               // modelId=processDefinitionService.getModelerById(modelId);
+                Model modelData = repositoryService.getModel(modelId);
+                BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
+                JsonNode editorNode = new ObjectMapper().readTree(repositoryService.getModelEditorSource(modelData.getId()));
+                BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(editorNode);
 
-            // 流程非空判断
-            if (!CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
-                BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
-                byte[] bpmnBytes = xmlConverter.convertToXML(bpmnModel);
+                // 流程非空判断
+                if (!CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
+                    BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
+                    byte[] bpmnBytes = xmlConverter.convertToXML(bpmnModel);
 
-                ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
-                String filename = bpmnModel.getMainProcess().getId() + ".bpmn";
-                response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-                IOUtils.copy(in, response.getOutputStream());
-                response.flushBuffer();
-            } else {
-                try {
-                    response.sendRedirect("/process/modeler/modelList");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                    ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
+                    String filename = bpmnModel.getMainProcess().getId() + ".bpmn";
+                    response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+                    IOUtils.copy(in, response.getOutputStream());
+                    response.flushBuffer();
+                } else {
+                    try {
+                        response.sendRedirect("/process/modeler/modelList");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
-            }
+            }else {//png 图片
+                if (StringUtils.isBlank(modelId)) {
+                    try {
+                        response.sendRedirect("/process/modeler/modelList");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                //重新获取modelerId
+               // modelId=processDefinitionService.getModelerById(modelId);
+                Model modelData = repositoryService.getModel(modelId);
+                BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
+                JsonNode editorNode = new ObjectMapper().readTree(repositoryService.getModelEditorSource(modelData.getId()));
+                BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(editorNode);
+                // 流程非空判断
+                if (!CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
+                    ProcessDiagramGenerator p = new DefaultProcessDiagramGenerator();
+                    InputStream is = p.generatePngDiagram(bpmnModel,1.0);
+                    String filename = bpmnModel.getMainProcess().getId() + ".png";
+                    response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+                    IOUtils.copy(is, response.getOutputStream());
+                    response.flushBuffer();
+                } else {
+                    try {
+                        response.sendRedirect("/process/modeler/modelList");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
 
+
+            }
         } catch (Exception e) {
             LOGGER.error("导出model的xml文件失败：modelId={}", modelId, e);
             try {

@@ -84,23 +84,33 @@
                 {
                     field : 'createTime',
                     title : '创建时间'
-                },
-                {
-                    field : 'lastUpdateTime',
-                    title : '最后更新时间'
-                },
-                {
-                    field : 'metaInfo',
-                    title : '元数据'
-                },
-                {
+                }, {
+                        title : '导出bpmn',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a href="javascript:void(0)" onclick="export2Bpmn(\'' + row.id + '\')">导出bpmn</a> ');
+                            return actions.join('');
+                        }
+                    },
+                    {
+                        title : '导出pic',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a href="javascript:void(0)" onclick="export2Pic(\'' + row.id + '\')">导出png</a> ');
+                            return actions.join('');
+                        }
+                    }, {
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
                         var actions = [];
                         actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="successCallback(\'' + row.id + '\')"><i class="fa fa-edit"></i> 编辑</a> ');
                         actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="deployModel(\'' + row.id + '\')"><i class="fa fa-cloud-upload"></i> 部署</a> ');
+/*
                         actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" onclick="export2Bpmn(\'' + row.id + '\')"><i class="fa fa-download"></i> 导出</a> ');
+*/
                         actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i> 删除</a> ');
                         return actions.join('');
                     }
@@ -118,10 +128,11 @@
             $.modal.open(nodeName, url);
         }
 
+        //导出bpmn
         function export2Bpmn(modelId) {
             // $.operate.submit(prefix + "/export/" + modelId, "get", "", "");
 
-            window.location.href = prefix + "/export/" + modelId;
+            window.location.href = ctx+"process/modeler" + "/export/" + modelId+"/01";
 
             // $.modal.loading("正在导出数据，请稍后...");
             // $.post(prefix + "/export/" + modelId, "", function(result) {
@@ -134,6 +145,12 @@
             //     }
             //     $.modal.closeLoading();
             // });
+        }
+
+        //导出img
+        function export2Pic(modelId) {
+            // $.operate.submit(prefix + "/export/" + modelId, "get", "", "");
+            window.location.href = ctx+"process/modeler" + "/export/" + modelId+"/02";
         }
 
         function successCallback(modelId) {
