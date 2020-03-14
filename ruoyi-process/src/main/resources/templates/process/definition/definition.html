@@ -12,7 +12,7 @@
 					 <div class="select-list">
 						 <ul>
 							 <li>
-								 <p>流程KEY：</p>
+								 <p>流程KEY</p>
 								 <input type="text" name="key"/>
 							 </li>
 							 <li>
@@ -39,7 +39,7 @@
 			 </div>
 
 			 <div class="btn-group-sm" id="toolbar" role="group">
-				 <div id="processDefinitionDiv" class="fileinput fileinput-new" data-provides="fileinput" style="margin-bottom: 0; margin-right: -3px;">
+				 <div id="processDefinitionDiv" class="fileinput fileinput-new" data-provides="fileinput" style="margin-bottom: 0; margin-right: -3px;" shiro:hasPermission="process:definition:upload">
 										<span class="btn btn-success btn-file" style="font-size: 12px;">
 											<span><i class="fa fa-upload"></i> 部署流程定义</span>
 											<input type="file" name="processDefinition" multiple>
@@ -47,10 +47,10 @@
 					 <span class="fileinput-filename"></span>
 					 <a href="#" class="close fileinput-exists" data-dismiss="fileinput" style="float: none">&times;</a>
 				 </div>
-				 <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="process:procdef:remove">
+				 <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="process:definition:remove">
 					 <i class="fa fa-remove"></i> 删除
 				 </a>
-				 <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="process:procdef:export">
+				 <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="process:definition:export">
 					 <i class="fa fa-download"></i> 导出
 				 </a>
 			 </div>
@@ -63,8 +63,9 @@
     <div th:include="include :: footer"></div>
 		<th:block th:include="include :: jasny-bootstrap-js" />
     <script th:inline="javascript">
-				var editFlag = [[${@permission.hasPermi('process:procdef:edit')}]];
-				var removeFlag = [[${@permission.hasPermi('process:procdef:remove')}]];
+				var editFlag = [[${@permission.hasPermi('process:definition:edit')}]];
+				var removeFlag = [[${@permission.hasPermi('process:definition:remove')}]];
+				var processStateUp = [[${@permission.hasPermi('process:definition:processup')}]];
         var prefix = ctx + "process/definition";
         var datas = [[${@dict.getType('sys_normal_disable')}]];
 
@@ -111,6 +112,11 @@
 						align: 'center',
 						formatter: function(value, row, index) {
 							var actions = [];
+							if(row.suspensionstate==1){
+								actions.push('<a class="btn btn-warning btn-xs' + processStateUp + '" href="javascript:void(0)" onclick="processUp(\'' + row.id + '\',\'' + row.suspensionstate + '\')"><i class="glyphicon glyphicon-arrow-up"></i> 挂起</a> ');
+							}else{
+								actions.push('<a class="btn btn-primary btn-xs' + processStateUp + '" href="javascript:void(0)" onclick="processUp(\'' + row.id + '\',\'' + row.suspensionstate + '\')"><i class="glyphicon glyphicon-dashboard"></i> 激活</a> ');
+							}
 							actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.deploymentId + '\')"><i class="fa fa-remove"></i> 删除</a>');
 							return actions.join('');
 						}
@@ -137,6 +143,17 @@
 								$.operate.ajaxSuccess(result);
 							}
 						})
+					});
+				}
+
+				//激活或者挂起流程
+				function processUp(processId,active){
+					$.modal.confirm("确认要激活/挂起?", function() {
+						$.get(prefix + "/processUp/" + processId+"/"+active, "", function(result) {
+							$.modal.msgSuccess(result.msg);
+							//刷新表格
+							$.table.refresh();
+						});
 					});
 				}
 

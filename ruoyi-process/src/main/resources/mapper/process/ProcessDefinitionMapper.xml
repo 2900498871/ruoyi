@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.process.definition.mapper.ProcessDefinitionMapper">
+
+    <resultMap type="ProcessDefinition" id="ProcessDefinitionResult">
+        <result property="id"    column="ID_"    />
+        <result property="name"    column="NAME_"    />
+        <result property="key"    column="KEY_"    />
+        <result property="version"    column="VERSION_"    />
+        <result property="category"    column="CATEGORY_"    />
+        <result property="description"    column="DESCRIPTION_"    />
+        <result property="deploymentId"    column="DEPLOYMENT_ID_"    />
+        <result property="deploymentTime"    column="DEPLOYMENT_TIME_"    />
+        <result property="suspensionstate"    column="SUSPENSION_STATE_"    />
+    </resultMap>
+    <select id="selectProcessDefinitionList" parameterType="ProcessDefinition" resultMap="ProcessDefinitionResult">
+        select * from (select def.*,dep.DEPLOY_TIME_ from ACT_RE_PROCDEF def ,ACT_RE_DEPLOYMENT dep where def.DEPLOYMENT_ID_=dep.ID_) as a where 1=1
+            <if test="id != null and id !='' "> and a.ID_ like concat('%', #{id}, '%')</if>
+            <if test="key != null and key !='' "> and a.KEY_ = #{key}</if>
+            <if test="name != null  and name != ''"> and a.NAME_ like concat('%', #{name}, '%')</if>
+    </select>
+
+</mapper>

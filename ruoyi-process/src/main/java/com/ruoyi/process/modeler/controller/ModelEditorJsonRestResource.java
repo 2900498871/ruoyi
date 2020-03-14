@@ -23,7 +23,7 @@ import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.process.definition.service.ProcessDefinitionService;
+import com.ruoyi.process.definition.service.IProcessDefinitionService;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.editor.constants.ModelDataJsonConstants;
@@ -34,8 +34,6 @@ import org.activiti.engine.impl.persistence.entity.ModelEntityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ModelQuery;
-import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -56,8 +54,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,7 +70,7 @@ public class ModelEditorJsonRestResource extends BaseController implements Model
   private RepositoryService repositoryService;
 
     @Autowired
-    private ProcessDefinitionService processDefinitionService;
+    private IProcessDefinitionService processDefinitionService;
 
   @Autowired
   private ObjectMapper objectMapper;

@@ -1,10 +1,13 @@
-package com.ruoyi.process.definition.service;
+package com.ruoyi.process.definition.service.impl;
 
 import com.github.pagehelper.Page;
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.process.definition.domain.ProcessDefinition;
+import com.ruoyi.process.definition.mapper.ProcessDefinitionMapper;
+import com.ruoyi.process.definition.service.IProcessDefinitionService;
 import com.ruoyi.process.general.mapper.ProcessMapper;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.mapper.SysUserMapper;
@@ -13,7 +16,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -30,7 +32,7 @@ import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 @Service
-public class ProcessDefinitionService {
+public class ProcessDefinitionService implements IProcessDefinitionService {
 
     @Autowired
     private RuntimeService runtimeService;
@@ -49,6 +51,9 @@ public class ProcessDefinitionService {
 
     @Autowired
     private IdentityService identityService;
+
+    @Autowired
+    private ProcessDefinitionMapper processDefinitionMapper;
 
 	@Transactional
     public void startProcess(String assignee) {
@@ -83,49 +88,8 @@ public class ProcessDefinitionService {
      * 分页查询流程定义文件
      * @return
      */
-    public Page<com.ruoyi.process.definition.domain.ProcessDefinition> listProcessDefinition(com.ruoyi.process.definition.domain.ProcessDefinition processDefinition) {
-        PageDomain pageDomain = TableSupport.buildPageRequest();
-        Integer pageNum = pageDomain.getPageNum();
-        Integer pageSize = pageDomain.getPageSize();
-
-        Page<com.ruoyi.process.definition.domain.ProcessDefinition> list = new Page<>();
-        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
-        processDefinitionQuery.orderByProcessDefinitionId().orderByProcessDefinitionVersion().desc();
-        if (StringUtils.isNotBlank(processDefinition.getName())) {
-            processDefinitionQuery.processDefinitionNameLike("%" + processDefinition.getName() + "%");
-        }
-        if (StringUtils.isNotBlank(processDefinition.getKey())) {
-            processDefinitionQuery.processDefinitionKeyLike("%" + processDefinition.getKey() + "%");
-        }
-        if (StringUtils.isNotBlank(processDefinition.getCategory())) {
-            processDefinitionQuery.processDefinitionCategoryLike("%" + processDefinition.getCategory() + "%");
-        }
-
-        List<org.activiti.engine.repository.ProcessDefinition> processDefinitionList;
-        if (pageNum != null && pageSize != null) {
-            processDefinitionList = processDefinitionQuery.listPage((pageNum - 1) * pageSize, pageSize);
-            list.setTotal(processDefinitionQuery.count());
-            list.setPageNum(pageNum);
-            list.setPageSize(pageSize);
-        } else {
-            processDefinitionList = processDefinitionQuery.list();
-        }
-        for (ProcessDefinition definition: processDefinitionList) {
-            com.ruoyi.process.definition.domain.ProcessDefinition entity = new com.ruoyi.process.definition.domain.ProcessDefinition();
-            entity.setId(definition.getId());
-            entity.setKey(definition.getKey());
-            entity.setName(definition.getName());
-            entity.setCategory(definition.getCategory());
-            entity.setVersion(definition.getVersion());
-            entity.setDescription(definition.getDescription());
-            entity.setDeploymentId(definition.getDeploymentId());
-            Deployment deployment = repositoryService.createDeploymentQuery()
-                    .deploymentId(definition.getDeploymentId())
-                    .singleResult();
-            entity.setDeploymentTime(deployment.getDeploymentTime());
-            list.add(entity);
-        }
-        return list;
+    public List<ProcessDefinition> selectProcessDefinitionList(com.ruoyi.process.definition.domain.ProcessDefinition processDefinition) {
+        return processDefinitionMapper.selectProcessDefinitionList(processDefinition);
     }
 
     @Transactional

@@ -75,7 +75,9 @@
 						</li>
 					</ul>
                 </li>
-                <li th:if="${demoEnabled}">
+               <!-- <li th:if="${demoEnabled}">-->
+				<!--只有超级管理员可查看-->
+				<li th:if="${user.userId==1}">
                     <a href="#"><i class="fa fa-desktop"></i><span class="nav-label">实例演示</span><span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
                         <li> <a>表单<span class="fa arrow"></span></a>

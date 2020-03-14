@@ -31,6 +31,8 @@ public class ProcessDefinition extends BaseEntity {
     @Excel(name = "部署时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date deploymentTime;
 
+    private String suspensionstate;
+
     public String getId() {
         return id;
     }
@@ -93,5 +95,13 @@ public class ProcessDefinition extends BaseEntity {
 
     public void setDeploymentTime(Date deploymentTime) {
         this.deploymentTime = deploymentTime;
+    }
+
+    public String getSuspensionstate() {
+        return suspensionstate;
+    }
+
+    public void setSuspensionstate(String suspensionstate) {
+        this.suspensionstate = suspensionstate;
     }
 }

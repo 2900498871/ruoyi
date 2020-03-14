@@ -11,7 +11,9 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.process.definition.domain.ProcessDefinition;
-import com.ruoyi.process.definition.service.ProcessDefinitionService;
+import com.ruoyi.process.definition.service.IProcessDefinitionService;
+import com.ruoyi.process.definition.service.impl.ProcessDefinitionService;
+import org.activiti.engine.RepositoryService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,10 @@ public class ProcessDefinitionController extends BaseController {
     @Autowired
     private ProcessDefinitionService processDefinitionService;
 
+    @Autowired
+    private RepositoryService repositoryService;
+
+
     @RequiresPermissions("process:definition:view")
     @GetMapping
     public String processDefinition() {
@@ -40,10 +46,10 @@ public class ProcessDefinitionController extends BaseController {
     }
 
     @PostMapping("/list")
-    @RequiresPermissions("process:definition:list")
     @ResponseBody
     public TableDataInfo list(ProcessDefinition processDefinition) {
-        List<ProcessDefinition> list = processDefinitionService.listProcessDefinition(processDefinition);
+        startPage();
+        List<ProcessDefinition> list = processDefinitionService.selectProcessDefinitionList(processDefinition);
         return getDataTable(list);
     }
 
@@ -98,9 +104,25 @@ public class ProcessDefinitionController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export() {
-        List<ProcessDefinition> list = processDefinitionService.listProcessDefinition(new ProcessDefinition());
+        List<ProcessDefinition> list = processDefinitionService.selectProcessDefinitionList(new ProcessDefinition());
         ExcelUtil<ProcessDefinition> util = new ExcelUtil<>(ProcessDefinition.class);
         return util.exportExcel(list, "流程定义数据");
+    }
+
+    /***
+     * 挂起/激活
+     */
+    @Log(title = "流程挂起/激活", businessType = BusinessType.OTHER)
+    @RequiresPermissions("process:definition:processup")
+    @GetMapping("/processUp/{instanceId}/{active}")
+    @ResponseBody
+    public AjaxResult updateState(@PathVariable("instanceId") String procDefId,@PathVariable("active") String active){
+        if (active.equals("1")) {//挂起
+            repositoryService.suspendProcessDefinitionById(procDefId, true, null);
+        } else  {//激活
+            repositoryService.activateProcessDefinitionById(procDefId, true, null);
+        }
+        return success("操作成功");
     }
 
 }
