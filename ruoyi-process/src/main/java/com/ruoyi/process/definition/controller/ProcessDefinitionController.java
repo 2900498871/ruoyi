@@ -77,6 +77,7 @@ public class ProcessDefinitionController extends BaseController {
      * @return
      */
     @RequiresPermissions("process:definition:processView")
+    @Log(title = "流程设置", businessType = BusinessType.GRANT)
     @GetMapping("/processView/{processId}")
     public String modelList(@PathVariable("processId") String processId, ModelMap mmap) {
         //把流程id 存起来
