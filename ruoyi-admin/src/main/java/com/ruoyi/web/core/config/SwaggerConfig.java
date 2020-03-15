@@ -22,6 +22,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig
 {
+
+    public SwaggerConfig() {
+        System.out.println("SwaggerConfig配置容器启动初始化完成");
+    }
     /**
      * 创建API
      */

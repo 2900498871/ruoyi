@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:>
+<head>
+	<th:block th:include="include :: header('修改用户')" />
+	<th:block th:include="include :: select2-css" />
+</head>
+<body>
+<div class="main-content">
+
+		<label  style="color: red;padding:6px 12px;">注意:点击任务节点可以进行节点配置。</label>
+		<div id="diagramImage">
+			<!--第一种方法-->
+			<img id="workFlowImg" style="width: auto;height:auto" alt="image" class="img" th:src="@{${path}}"/>
+		</div>
+</div>
+
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: select2-js" />
+<script type="text/javascript">
+	var prefix = ctx + "process/definition";
+
+</script>
+</body>
+</html>

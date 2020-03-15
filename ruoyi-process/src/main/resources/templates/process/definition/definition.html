@@ -66,6 +66,7 @@
 				var editFlag = [[${@permission.hasPermi('process:definition:edit')}]];
 				var removeFlag = [[${@permission.hasPermi('process:definition:remove')}]];
 				var processStateUp = [[${@permission.hasPermi('process:definition:processup')}]];
+				var processView = [[${@permission.hasPermi('process:definition:processView')}]];
         var prefix = ctx + "process/definition";
         var datas = [[${@dict.getType('sys_normal_disable')}]];
 
@@ -100,19 +101,33 @@
 					title : '流程描述'
 				},
 				{
-					field : 'category',
-					title : '所属分类'
-				},
-				{
 					field : 'deploymentTime',
 					title : '部署时间'
-				},
-				{
+				}, {
+						title : '导出bpmn',
+						align: 'center',
+						formatter: function(value, row, index) {
+							var actions = [];
+							actions.push('<a href="javascript:void(0)" onclick="export2Bpmn(\'' + row.id + '\')">bpmn</a> ');
+							return actions.join('');
+						}
+					},
+					{
+						title : '查看图片',
+						align: 'center',
+						formatter: function(value, row, index) {
+							var actions = [];
+							actions.push('<a href="javascript:void(0)" onclick="export2Pic(\'' + row.id + '\')">png</a> ');
+							return actions.join('');
+						}
+					}, {
 						title: '操作',
 						align: 'center',
 						formatter: function(value, row, index) {
 							var actions = [];
+
 							if(row.suspensionstate==1){
+								actions.push('<a class="btn btn-primary btn-xs' + processView + '" href="javascript:void(0)" onclick="openProcess(\'' + row.id + '\')"><i class="glyphicon glyphicon-eye-open"></i>设置</a> ');
 								actions.push('<a class="btn btn-warning btn-xs' + processStateUp + '" href="javascript:void(0)" onclick="processUp(\'' + row.id + '\',\'' + row.suspensionstate + '\')"><i class="glyphicon glyphicon-arrow-up"></i> 挂起</a> ');
 							}else{
 								actions.push('<a class="btn btn-primary btn-xs' + processStateUp + '" href="javascript:void(0)" onclick="processUp(\'' + row.id + '\',\'' + row.suspensionstate + '\')"><i class="glyphicon glyphicon-dashboard"></i> 激活</a> ');
@@ -155,6 +170,24 @@
 							$.table.refresh();
 						});
 					});
+				}
+
+				//设置节点的审核用户或者审核角色
+				function openProcess(processId){
+					var url = prefix + '/processView/' + processId;
+					$.modal.openFull("查看流程图", url);
+				}
+
+				//导出img
+				function export2Pic(processId) {
+					// $.operate.submit(prefix + "/export/" + modelId, "get", "", "");
+					var url= prefix+"/exportXmlOrImage?type=image&processId="+processId;
+					$.modal.open("查看流程图", url);
+				}
+
+				//导出bpmn
+				function export2Bpmn(processId) {
+					window.location.href =  prefix+"/exportXmlOrImage?type=xml&processId="+processId;
 				}
 
     </script>

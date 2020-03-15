@@ -84,24 +84,10 @@
                 {
                     field : 'createTime',
                     title : '创建时间'
-                }, {
-                        title : '导出bpmn',
-                        align: 'center',
-                        formatter: function(value, row, index) {
-                            var actions = [];
-                            actions.push('<a href="javascript:void(0)" onclick="export2Bpmn(\'' + row.id + '\')">导出bpmn</a> ');
-                            return actions.join('');
-                        }
-                    },
-                    {
-                        title : '导出pic',
-                        align: 'center',
-                        formatter: function(value, row, index) {
-                            var actions = [];
-                            actions.push('<a href="javascript:void(0)" onclick="export2Pic(\'' + row.id + '\')">导出png</a> ');
-                            return actions.join('');
-                        }
-                    }, {
+                },{
+                        field : 'metaInfo',
+                        title : '信息'
+                    },{
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
@@ -128,30 +114,7 @@
             $.modal.open(nodeName, url);
         }
 
-        //导出bpmn
-        function export2Bpmn(modelId) {
-            // $.operate.submit(prefix + "/export/" + modelId, "get", "", "");
 
-            window.location.href = ctx+"process/modeler" + "/export/" + modelId+"/01";
-
-            // $.modal.loading("正在导出数据，请稍后...");
-            // $.post(prefix + "/export/" + modelId, "", function(result) {
-            //     if (result.code == web_status.SUCCESS) {
-            //         window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
-            //     } else if (result.code == web_status.WARNING) {
-            //         $.modal.alertWarning(result.msg)
-            //     } else {
-            //         $.modal.alertError(result.msg);
-            //     }
-            //     $.modal.closeLoading();
-            // });
-        }
-
-        //导出img
-        function export2Pic(modelId) {
-            // $.operate.submit(prefix + "/export/" + modelId, "get", "", "");
-            window.location.href = ctx+"process/modeler" + "/export/" + modelId+"/02";
-        }
 
         function successCallback(modelId) {
             createMyMenuItem("/modeler/modeler.html?modelId=" + modelId, "模型在线设计");

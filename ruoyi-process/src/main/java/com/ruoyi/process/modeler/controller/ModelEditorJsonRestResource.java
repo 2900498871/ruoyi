@@ -221,10 +221,9 @@ public class ModelEditorJsonRestResource extends BaseController implements Model
     /**
      * 导出model的xml文件
      */
-    @RequestMapping(value = "/process/modeler/export/{modelId}/{type}")
-    public void export(@PathVariable("modelId") String modelId,@PathVariable("type") String type, HttpServletResponse response) {
+    @RequestMapping(value = "/process/modeler/export/{modelId}")
+    public void export(@PathVariable("modelId") String modelId, HttpServletResponse response) {
         try {
-            if(type.equals("01")){//bpmn 文件
                 //重新获取modelerId
                // modelId=processDefinitionService.getModelerById(modelId);
                 Model modelData = repositoryService.getModel(modelId);
@@ -249,38 +248,6 @@ public class ModelEditorJsonRestResource extends BaseController implements Model
                         ex.printStackTrace();
                     }
                 }
-            }else {//png 图片
-                if (StringUtils.isBlank(modelId)) {
-                    try {
-                        response.sendRedirect("/process/modeler/modelList");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                //重新获取modelerId
-               // modelId=processDefinitionService.getModelerById(modelId);
-                Model modelData = repositoryService.getModel(modelId);
-                BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
-                JsonNode editorNode = new ObjectMapper().readTree(repositoryService.getModelEditorSource(modelData.getId()));
-                BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(editorNode);
-                // 流程非空判断
-                if (!CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
-                    ProcessDiagramGenerator p = new DefaultProcessDiagramGenerator();
-                    InputStream is = p.generatePngDiagram(bpmnModel,1.0);
-                    String filename = bpmnModel.getMainProcess().getId() + ".png";
-                    response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-                    IOUtils.copy(is, response.getOutputStream());
-                    response.flushBuffer();
-                } else {
-                    try {
-                        response.sendRedirect("/process/modeler/modelList");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-
-
-            }
         } catch (Exception e) {
             LOGGER.error("导出model的xml文件失败：modelId={}", modelId, e);
             try {
