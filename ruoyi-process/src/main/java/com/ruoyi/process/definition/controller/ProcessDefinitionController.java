@@ -13,10 +13,12 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.process.definition.domain.ProcessDefinition;
+import com.ruoyi.process.definition.domain.processModel;
 import com.ruoyi.process.definition.service.impl.ProcessDefinitionService;
 
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowElement;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.RepositoryService;
 
@@ -39,6 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -83,6 +87,32 @@ public class ProcessDefinitionController extends BaseController {
         //把流程id 存起来
         mmap.put("processId",processId);
         mmap.put("path","../../../process/definition/exportXmlOrImage?type=image&processId="+processId);
+        try{
+            String  modelId=processDefinitionService.getModelerById(processId);
+            Model modelData = repositoryService.getModel(modelId);
+            BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
+            JsonNode editorNode = new ObjectMapper().readTree(repositoryService.getModelEditorSource(modelData.getId()));
+            BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(editorNode);
+            if(bpmnModel != null) {
+                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
+                List<processModel> baglist=new ArrayList<>();
+                for (FlowElement e : flowElements) {
+                    String classStr=e.getClass().toString();
+                    if(classStr.equals("class org.activiti.bpmn.model.UserTask")){//流程审核节点
+                        processModel p=new processModel();
+                        p.setId(e.getId());
+                        p.setKey(modelData.getKey());
+                        p.setName(e.getName());
+                        baglist.add(p);
+                        System.out.println("flowelement id:" + e.getId() + "  name:" + e.getName() + "   class:" + e.getClass().toString());
+                    }
+                }
+                mmap.put("dateList",baglist);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         return "process/definition/processView";
     }
 
