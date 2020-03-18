@@ -15,11 +15,71 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="deploymentTime"    column="DEPLOYMENT_TIME_"    />
         <result property="suspensionstate"    column="SUSPENSION_STATE_"    />
     </resultMap>
+
+    <!--用户和角色查询的sql-->
+    <resultMap type="TaskAssign" id="TaskAssignResult">
+        <result property="name"    column="role_name"    />
+        <result property="usertask"    column="user_task"    />
+        <result property="assignId"    column="role_id"    />
+        <result property="datatype"    column="data_type"    />
+        <result property="processkey"    column="processkey"    />
+        <result property="isassign"    column="isassign"    />
+    </resultMap>
+
     <select id="selectProcessDefinitionList" parameterType="ProcessDefinition" resultMap="ProcessDefinitionResult">
         select * from (select def.*,dep.DEPLOY_TIME_ from ACT_RE_PROCDEF def ,ACT_RE_DEPLOYMENT dep where def.DEPLOYMENT_ID_=dep.ID_) as a where 1=1
             <if test="id != null and id !='' "> and a.ID_ like concat('%', #{id}, '%')</if>
             <if test="key != null and key !='' "> and a.KEY_ = #{key}</if>
             <if test="name != null  and name != ''"> and a.NAME_ like concat('%', #{name}, '%')</if>
     </select>
+
+    <!--查询角色的列表-->
+    <select id="selectRoleAssignList" parameterType="TaskAssign" resultMap="TaskAssignResult">
+        SELECT r.*,x.*, CASE
+        WHEN x.assign_id IS NOT NULL THEN	1
+        WHEN x.assign_id IS NULL THEN 0
+        END AS isassign  FROM sys_role r
+        LEFT JOIN (
+        SELECT * FROM task_assign t
+        where t.data_type ="01"
+        and t.user_task = #{usertask}
+        AND t.processkey = #{processkey}
+        ) x ON r. role_id = x.assign_id
+        where  r.del_flag=0 and r.status=0 and  1=1
+        <if test="name != null  and name != ''"> and r.role_name like concat('%', #{name}, '%')</if>
+    </select>
+
+    <!--查询用户的列表-->
+    <select id="selectUserAssignList" parameterType="TaskAssign" resultMap="TaskAssignResult">
+        SELECT r.*,r.user_id as role_id,r.user_name as role_name, x.*, CASE
+        WHEN x.assign_id IS NOT NULL THEN	1
+        WHEN x.assign_id IS NULL THEN 0
+        END AS isassign  FROM sys_user r
+        LEFT JOIN (
+        SELECT * FROM task_assign t
+        where t.data_type = "02"
+        and t.user_task = #{usertask}
+        AND t.processkey = #{processkey}
+        ) x ON r. user_id = x.assign_id
+        where  r.del_flag=0 and r.status=0 and 1=1
+        <if test="name != null  and name != ''"> and r.user_name like concat('%', #{name}, '%')</if>
+    </select>
+
+    <delete id="deleteAssign" parameterType="TaskAssign">
+        delete from task_assign where assign_id = #{assignId} and data_type=#{datatype}
+    </delete>
+    
+    <insert id="insertAssign" parameterType="TaskAssign">
+        insert into task_assign
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="usertask != null  and usertask != ''">#{usertask},</if>
+            <if test="assignId != null  and assignId != ''">#{assignId},</if>
+            <if test="datatype != null  and datatype != ''">#{datatype},</if>
+            <if test="processkey != null and processkey !='' ">#{processkey}</if>
+        </trim>
+    </insert>
+
+
+
 
 </mapper>

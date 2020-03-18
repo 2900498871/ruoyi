@@ -6,6 +6,7 @@ import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.process.definition.domain.ProcessDefinition;
+import com.ruoyi.process.definition.domain.TaskAssign;
 import com.ruoyi.process.definition.mapper.ProcessDefinitionMapper;
 import com.ruoyi.process.definition.service.IProcessDefinitionService;
 import com.ruoyi.process.general.mapper.ProcessMapper;
@@ -90,6 +91,30 @@ public class ProcessDefinitionService implements IProcessDefinitionService {
      */
     public List<ProcessDefinition> selectProcessDefinitionList(com.ruoyi.process.definition.domain.ProcessDefinition processDefinition) {
         return processDefinitionMapper.selectProcessDefinitionList(processDefinition);
+    }
+
+    public List<TaskAssign> selectRoleAssignList(TaskAssign taskAssign){
+        return processDefinitionMapper.selectRoleAssignList(taskAssign);
+    }
+
+    public List<TaskAssign> selectUserAssignList(TaskAssign taskAssign){
+        return processDefinitionMapper.selectUserAssignList(taskAssign);
+    }
+
+    /**
+     * 根据用户或角色
+     * @param taskAssign
+     */
+    public void deleteAssign(TaskAssign taskAssign){
+        processDefinitionMapper.deleteAssign(taskAssign);
+    }
+
+    /**
+     * 插入值
+     * @param taskAssign
+     */
+    public void insertAssign(TaskAssign taskAssign){
+      processDefinitionMapper.insertAssign(taskAssign);
     }
 
     @Transactional

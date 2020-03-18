@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('设置节点角色')" />
+</head>
+<body class="gray-bg">
+	<div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="role-form">
+					<div class="select-list">
+						<ul>
+							<li>
+								角色名称：<input type="text" name="name"/>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+							    <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+		
+			<div class="btn-group-sm" id="toolbar" role="group">
+	        </div>
+	        
+	        <div class="col-sm-12 select-table table-striped">
+			    <table id="bootstrap-table"></table>
+			</div>
+		</div>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script th:inline="javascript">
+		var prefix = ctx + "process/definition";
+		var url=prefix + "/listRole/"+[[*{modelId}]]+"/"+[[*{modelkey}]];
+		$(function() {
+		    var options = {
+		        url: url,
+		        modalName: "节点设置角色",
+		        columns: [{
+		            checkbox: true
+		        },
+		        {
+		            field: 'name',
+		            title: '角色名称',
+		            sortable: true
+		        },
+		        {
+		        	title: '设置状态',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		return statusTools(row);
+		        	}
+		        }]
+		    };
+		    $.table.init(options);
+		});
+		
+
+		/* 角色状态显示 */
+		function statusTools(row) {
+		    if (row.isassign == 0) {
+    			return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.assignId + '\')"></i> ';
+    		} else {
+    			return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.assignId + '\')"></i> ';
+    		}
+		}
+		
+		/* 角色管理-停用 */
+		function disable(roleId) {
+			var userTask=[[*{modelId}]];
+			var processKey=[[*{modelkey}]];
+			$.modal.confirm("确认要停用角色吗？", function() {
+				$.operate.post(prefix + "/changeStatus/"+userTask+"/"+processKey+"/"+roleId+"/01/02");
+				$.modal.msgSuccess(result.msg);
+				//刷新表格
+				$.table.refresh();
+		    })
+		}
+
+		/* 角色管理启用 */
+		function enable(roleId) {
+			var userTask=[[*{modelId}]];
+			var processKey=[[*{modelkey}]];
+			$.modal.confirm("确认要启用角色吗？", function() {
+				$.operate.post(prefix + "/changeStatus/"+userTask+"/"+processKey+"/"+roleId+"/01/01");
+				$.modal.msgSuccess(result.msg);
+				//刷新表格
+				$.table.refresh();
+		    })
+		}
+	</script>
+</body>
+</html>

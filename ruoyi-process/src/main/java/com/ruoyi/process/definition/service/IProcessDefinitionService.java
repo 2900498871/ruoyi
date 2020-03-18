@@ -4,6 +4,8 @@ package com.ruoyi.process.definition.service;
 
 
 import com.ruoyi.process.definition.domain.ProcessDefinition;
+import com.ruoyi.process.definition.domain.TaskAssign;
+
 
 import java.util.List;
 
@@ -13,5 +15,13 @@ import java.util.List;
 public interface IProcessDefinitionService {
 
     public List<ProcessDefinition> selectProcessDefinitionList(ProcessDefinition processDefinition);
+
+    public List<TaskAssign> selectRoleAssignList(TaskAssign taskAssign);
+
+    public List<TaskAssign> selectUserAssignList(TaskAssign taskAssign);
+
+    public void deleteAssign(TaskAssign taskAssign);
+
+    public void insertAssign(TaskAssign taskAssign);
 
 }

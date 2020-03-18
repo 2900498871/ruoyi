@@ -13,6 +13,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.process.definition.domain.ProcessDefinition;
+import com.ruoyi.process.definition.domain.TaskAssign;
 import com.ruoyi.process.definition.domain.processModel;
 import com.ruoyi.process.definition.service.impl.ProcessDefinitionService;
 
@@ -74,6 +75,61 @@ public class ProcessDefinitionController extends BaseController {
         return getDataTable(list);
     }
 
+
+    @PostMapping("/listRole/{userTask}/{processKey}")
+    @ResponseBody
+    public TableDataInfo listRole(@PathVariable("userTask") String userTask,@PathVariable("processKey") String processKey,TaskAssign taskAssign) {
+        startPage();
+        taskAssign.setUsertask(userTask);
+        taskAssign.setProcesskey(processKey);
+        List<TaskAssign> list = processDefinitionService.selectRoleAssignList(taskAssign);
+        return getDataTable(list);
+    }
+
+    @PostMapping("/listUser/{userTask}/{processKey}")
+    @ResponseBody
+    public TableDataInfo listUser(@PathVariable("userTask") String userTask,@PathVariable("processKey") String processKey,TaskAssign taskAssign) {
+        startPage();
+        taskAssign.setUsertask(userTask);
+        taskAssign.setProcesskey(processKey);
+        List<TaskAssign> list = processDefinitionService.selectUserAssignList(taskAssign);
+        return getDataTable(list);
+    }
+
+    /**
+     * 改变状态
+     * @param userTask
+     * @param processKey
+     * @param assignId
+     * @param datatype
+     * @param type
+     * @param taskAssign
+     */
+    @PostMapping("/changeStatus/{userTask}/{processKey}/{assignId}/{datatype}/{type}")
+    @ResponseBody
+    public AjaxResult changeStatus(@PathVariable("userTask") String userTask,
+                             @PathVariable("processKey") String processKey,
+                             @PathVariable("assignId") String assignId,
+                             @PathVariable("datatype") String datatype,
+                             @PathVariable("type") String type,
+                             TaskAssign taskAssign) {
+        if(type.equals("01")){//启用
+            taskAssign.setDatatype(datatype);
+            taskAssign.setUsertask(userTask);
+            taskAssign.setProcesskey(processKey);
+            taskAssign.setAssignId(assignId);
+            processDefinitionService.insertAssign(taskAssign);
+            return success("已启用");
+        }else{//停用
+            taskAssign.setDatatype(datatype);
+            taskAssign.setAssignId(assignId);
+            processDefinitionService.deleteAssign(taskAssign);
+            return success("已停用");
+        }
+    }
+
+
+
     /**
      * 跳转导设置流程的页面
      * @param processId
@@ -114,6 +170,36 @@ public class ProcessDefinitionController extends BaseController {
         }
 
         return "process/definition/processView";
+    }
+
+    /**
+     * 跳转导设置流程的页面
+     * @param processId
+     * @param mmap
+     * @return
+     */
+    @GetMapping("/setFlowRole/{modelkey}/{modelId}/{processId}")
+    public String setFlowRole(@PathVariable("modelkey") String modelkey,@PathVariable("modelId") String modelId,@PathVariable("processId") String processId, ModelMap mmap) {
+        //把流程id 存起来
+        mmap.put("modelkey",modelkey);
+        mmap.put("modelId",modelId);
+        mmap.put("processId",processId);
+        return "process/definition/setRoleAssign";
+    }
+
+    /**
+     * 跳转导设置流程的页面
+     * @param processId
+     * @param mmap
+     * @return
+     */
+    @GetMapping("/setFlowUser/{modelkey}/{modelId}/{processId}")
+    public String setFlowUser(@PathVariable("modelkey") String modelkey,@PathVariable("modelId") String modelId,@PathVariable("processId") String processId, ModelMap mmap) {
+        //把流程id 存起来
+        mmap.put("modelkey",modelkey);
+        mmap.put("modelId",modelId);
+        mmap.put("processId",processId);
+        return "process/definition/setUserAssign";
     }
 
     /**

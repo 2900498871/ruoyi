@@ -3,6 +3,7 @@ package com.ruoyi.process.definition.mapper;
 
 
 import com.ruoyi.process.definition.domain.ProcessDefinition;
+import com.ruoyi.process.definition.domain.TaskAssign;
 
 import java.util.List;
 
@@ -22,5 +23,33 @@ public interface ProcessDefinitionMapper
      * @return 流程用户组集合
      */
     public List<ProcessDefinition> selectProcessDefinitionList(ProcessDefinition processDefinition);
+
+    /**
+     * 获取配置角色数据的列表
+     * @param taskAssign
+     * @return
+     */
+    public List<TaskAssign> selectRoleAssignList(TaskAssign taskAssign);
+
+    /**
+     * 获取配置用户数据的列表
+     * @param taskAssign
+     * @return
+     */
+    public List<TaskAssign> selectUserAssignList(TaskAssign taskAssign);
+
+    /**
+     * 根据角色删除
+     * @param taskAssign
+     */
+    public void deleteAssign(TaskAssign taskAssign);
+
+
+    /**
+     * 根据assign 插入值
+     * @param taskAssign
+     */
+    public void insertAssign(TaskAssign taskAssign);
+
 
 }

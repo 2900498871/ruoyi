@@ -103,7 +103,10 @@
 	 * @param modelkey 节点key
 	 */
 	function setRoleToActivi(modelId,processId,modelkey){
+
 		console.log(modelId+"-----"+processId+"-----"+modelkey);
+		var url= prefix+"/setFlowRole/"+modelkey+"/"+modelId+"/"+processId;
+		$.modal.open("设置审核角色", url);
 	}
 
 	/**
@@ -114,6 +117,8 @@
 	 */
 	function setUserToActivi(modelId,processId,modelkey){
 		console.log(modelId+"-----"+processId+"-----"+modelkey);
+		var url= prefix+"/setFlowUser/"+modelkey+"/"+modelId+"/"+processId;
+		$.modal.open("设置审核用户", url);
 	}
 
 
