@@ -24,4 +24,8 @@ public interface IProcessDefinitionService {
 
     public void insertAssign(TaskAssign taskAssign);
 
+    public List<TaskAssign> selectListTaskRoleAssign(TaskAssign taskAssign);
+
+    public List<TaskAssign> selectListTaskUserAssign(TaskAssign taskAssign);
+
 }

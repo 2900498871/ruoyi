@@ -79,4 +79,9 @@ public class TaskAssign  extends BaseEntity{
     public void setProcesskey(String processkey) {
         this.processkey = processkey;
     }
+
+    public TaskAssign(String usertask, String processkey) {
+        this.usertask = usertask;
+        this.processkey = processkey;
+    }
 }

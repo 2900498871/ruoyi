@@ -102,6 +102,21 @@ public class ProcessDefinitionService implements IProcessDefinitionService {
     }
 
     /**
+     * 监听使用
+     * @param taskAssign
+     * @return
+     */
+    public List<TaskAssign> selectListTaskRoleAssign(TaskAssign taskAssign){
+        return processDefinitionMapper.selectListTaskRoleAssign(taskAssign);
+    }
+
+    public List<TaskAssign> selectListTaskUserAssign(TaskAssign taskAssign){
+        return processDefinitionMapper.selectListTaskUserAssign(taskAssign);
+    }
+
+
+
+    /**
      * 根据用户或角色
      * @param taskAssign
      */

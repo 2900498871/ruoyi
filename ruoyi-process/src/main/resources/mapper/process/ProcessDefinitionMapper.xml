@@ -80,6 +80,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
 
+    <!--查询流程节点的角色组的列表-->
+    <select id="selectListTaskRoleAssign" parameterType="TaskAssign" resultMap="TaskAssignResult">
+        SELECT DISTINCT
+        sysu.user_id as role_id,
+        sysu.user_name as role_name
+        FROM
+        TASK_ASSIGN t
+        JOIN sys_role r ON t.ASSIGN_ID = r.role_id
+        JOIN sys_user_role pr ON r.role_id = pr.role_id
+        JOIN sys_user sysu ON sysu.user_id = pr.user_id
+        WHERE  t.DATA_TYPE = '01' and
+        t.user_task = #{usertask} and t.processkey = #{processkey}
+    </select>
+
+    <!--查询流程节点的用户组的列表-->
+    <select id="selectListTaskUserAssign" parameterType="TaskAssign" resultMap="TaskAssignResult">
+        SELECT DISTINCT
+        sysu.user_id as role_id,
+        sysu.user_name as role_name
+        FROM
+        TASK_ASSIGN t left
+        JOIN sys_user sysu ON sysu.user_id = t.assign_id
+        where t.DATA_TYPE = '02' and
+        t.user_task = #{usertask} and t.processkey = #{processkey}
+    </select>
+
+
+
+
 
 
 </mapper>

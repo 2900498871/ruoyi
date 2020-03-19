@@ -51,5 +51,18 @@ public interface ProcessDefinitionMapper
      */
     public void insertAssign(TaskAssign taskAssign);
 
+    /**
+     * 根据角色查询
+     * @return
+     */
+    public List<TaskAssign> selectListTaskRoleAssign(TaskAssign taskAssign);
+
+
+    /**
+     * 根据用户查询
+     * @param taskAssign
+     * @return
+     */
+    public List<TaskAssign> selectListTaskUserAssign(TaskAssign taskAssign);
 
 }
