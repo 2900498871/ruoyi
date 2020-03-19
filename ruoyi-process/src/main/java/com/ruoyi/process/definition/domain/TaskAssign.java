@@ -29,6 +29,13 @@ public class TaskAssign  extends BaseEntity{
     @Excel(name = "是否分配")
     private String isassign;
 
+    public TaskAssign(String usertask, String processkey) {
+        this.usertask = usertask;
+        this.processkey = processkey;
+    }
+
+    public TaskAssign() {
+    }
 
     public String getName() {
         return name;
@@ -80,8 +87,5 @@ public class TaskAssign  extends BaseEntity{
         this.processkey = processkey;
     }
 
-    public TaskAssign(String usertask, String processkey) {
-        this.usertask = usertask;
-        this.processkey = processkey;
-    }
+
 }
