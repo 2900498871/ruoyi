@@ -14,6 +14,7 @@ import com.ruoyi.system.domain.SysUser;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.BooleanUtils;
@@ -270,7 +271,7 @@ public class BizLeaveController extends BaseController {
     @ResponseBody
     public TableDataInfo taskDoneList(BizLeaveVo bizLeave) {
         startPage();
-        List<BizLeaveVo> list = bizLeaveService.findDoneTasks(bizLeave, ShiroUtils.getLoginName());
+        List<HistoricTaskInstance> list = bizLeaveService.findDoneTasks(ShiroUtils.getUserId().toString());
         return getDataTable(list);
     }
 

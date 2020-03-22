@@ -50,7 +50,7 @@ public class ProcessServiceImpl implements IProcessService {
                 .activityType("userTask")
                 .finished()
                 .orderByHistoricActivityInstanceStartTime()
-                .desc()
+                .asc()
                 .list();
         list.forEach(instance -> {
             HistoricActivity activity = new HistoricActivity();

@@ -4,6 +4,7 @@ package com.ruoyi.process.definition.mapper;
 
 import com.ruoyi.process.definition.domain.ProcessDefinition;
 import com.ruoyi.process.definition.domain.TaskAssign;
+import com.ruoyi.process.definition.domain.VTasklist;
 
 import java.util.List;
 
@@ -64,5 +65,13 @@ public interface ProcessDefinitionMapper
      * @return
      */
     public List<TaskAssign> selectListTaskUserAssign(TaskAssign taskAssign);
+
+
+    /**
+     * 获取待办任务
+     * @param vTasklist
+     * @return
+     */
+    public List<VTasklist> selectTaskByUserTodo(VTasklist vTasklist);
 
 }

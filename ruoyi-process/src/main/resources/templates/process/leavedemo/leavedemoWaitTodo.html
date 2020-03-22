@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('请假demo列表待办')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>标题</p>
+                            <input type="text" name="title"/>
+                        </li>
+                        <li class="select-time">
+                            <p>开始时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginStarttime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endStarttime]"/>
+                        </li>
+                        <li class="select-time">
+                            <p>结束时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginEndtime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endEndtime]"/>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "leavedemo/leavedemo";
+
+    $(function() {
+        var options = {
+            url: prefix + "/waitTodolist",
+            modalName: "请假demo待办",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field : 'id',
+                    title : 'id',
+                    visible: false
+                },
+                {
+                    field : 'title',
+                    title : '标题'
+                },
+                {
+                    field : 'remark',
+                    title : '说明'
+                },
+                {
+                    field : 'pic',
+                    title : '图片'
+                },
+                {
+                    field : 'starttime',
+                    title : '请假开始时间'
+                },
+                {
+                    field : 'endtime',
+                    title : '请假结束时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-info btn-xs " href="javascript:void(0)" onclick="caimProcess(\'' + row.id + '\',\'' + row.taskId + '\')"><i class="glyphicon glyphicon-screenshot\n"></i> 审批任务</a> ');
+                        actions.push('<a class="btn btn-info btn-xs " href="javascript:void(0)" onclick="showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+
+
+    /**
+     * 审批任务
+     * @param instanceId
+     */
+    function caimProcess(id,taskId){
+        var url = prefix + '/caim/'+id+"/" + taskId;
+        $.modal.open("查看流程图 (标红表示已结束或活动中的流程)", url);
+    }
+
+    /**
+     * 查看流程图
+     * @param instanceId
+     */
+    function showProcessImgDialog(instanceId) {
+        var url = ctx + 'process/general/processImg/' + instanceId;
+        $.modal.open("查看流程图 (标红表示已结束或活动中的流程)", url);
+    }
+
+</script>
+</body>
+</html>

@@ -7,7 +7,9 @@ import com.ruoyi.process.definition.domain.ProcessDefinition;
 import com.ruoyi.process.definition.domain.TaskAssign;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ren
@@ -27,5 +29,13 @@ public interface IProcessDefinitionService {
     public List<TaskAssign> selectListTaskRoleAssign(TaskAssign taskAssign);
 
     public List<TaskAssign> selectListTaskUserAssign(TaskAssign taskAssign);
+
+    public HashMap startProcess(String id, String defKey, Map<String, Object> var);
+
+    public void caim(String taskid,String user_id);
+
+    public void completeTask(String taskid, Map<String,Object> var);
+
+    public void completeTask(String taskid,String insid, String comment, Map<String,Object> var);
 
 }

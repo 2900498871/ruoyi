@@ -1,6 +1,7 @@
 package com.ruoyi.process.leave.service;
 
 import com.ruoyi.process.leave.domain.BizLeaveVo;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 
 import java.util.List;
@@ -85,5 +86,5 @@ public interface IBizLeaveService {
      */
     void complete(BizLeaveVo leave, Boolean saveEntity, String taskId, Map<String, Object> variables);
 
-    List<BizLeaveVo> findDoneTasks(BizLeaveVo BizLeaveVo, String userId);
+    List<HistoricTaskInstance> findDoneTasks(String userId);
 }

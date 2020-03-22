@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.process.leavedemo.mapper.LeavedemoMapper">
+    
+    <resultMap type="Leavedemo" id="LeavedemoResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="remark"    column="remark"    />
+        <result property="pic"    column="pic"    />
+        <result property="starttime"    column="starttime"    />
+        <result property="endtime"    column="endtime"    />
+        <result property="instanceId"    column="instance_id"    />
+        <result property="runstatus"    column="runstatus"    />
+        <!--流程映射-->
+        <result property="userId"    column="userId"    />
+        <result property="taskId"    column="TASK_ID"    />
+        <result property="procInstId"    column="PROC_INST_ID"    />
+        <result property="actId"    column="ACT_ID"    />
+        <result property="actName"    column="ACT_NAME"    />
+
+    </resultMap>
+
+   <!-- <resultMap type="VTasklist" id="VTasklistResult">
+        <result property="taskId"    column="TASK_ID"    />
+        <result property="procInstId"    column="PROC_INST_ID"    />
+        <result property="actId"    column="ACT_ID"    />
+        <result property="actName"    column="ACT_NAME"    />
+        <result property="assignee"    column="ASSIGNEE"    />
+        <result property="delegationId"    column="DELEGATION_ID"    />
+        <result property="description"    column="DESCRIPTION"    />
+        <result property="dueDate"    column="DUE_DATE"    />
+        <result property="candidate"    column="candidate"    />
+    </resultMap>-->
+
+    <sql id="selectLeavedemoVo">
+        select id, title, remark, pic, starttime, endtime, instance_id, runstatus from leavedemo
+    </sql>
+
+    <select id="selectLeavedemoList" parameterType="Leavedemo" resultMap="LeavedemoResult">
+        <include refid="selectLeavedemoVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="pic != null  and pic != ''"> and pic = #{pic}</if>
+            <if test="starttime != null "> and starttime like concat('%', #{starttime}, '%')</if>
+            <if test="endtime != null "> and endtime like concat('%', #{endtime}, '%')</if>
+            <if test="instanceId != null  and instanceId != ''"> and instance_id = #{instanceId}</if>
+            <if test="runstatus != null  and runstatus != ''"> and runstatus = #{runstatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectLeavedemoById" parameterType="String" resultMap="LeavedemoResult">
+        <include refid="selectLeavedemoVo"/>
+        where id = #{id}
+    </select>
+
+    <!--获取请假流程待办-->
+    <select id="selectLeavedemoWaitTodo" parameterType="Leavedemo" resultMap="LeavedemoResult">
+        SELECT * FROM V_TASKLIST vt left join leavedemo ld on vt.PROC_INST_ID= ld.instance_id where
+        ASSIGNEE = #{userId} OR CANDIDATE = #{userId}
+    </select>
+
+    <!--获取请假待办根据taskid-->
+    <select id="selectLeavedemoWaitTodoByTaskId" parameterType="Leavedemo" resultMap="LeavedemoResult">
+        SELECT * FROM V_TASKLIST vt left join leavedemo ld on vt.PROC_INST_ID= ld.instance_id where
+        ASSIGNEE = #{userId} OR CANDIDATE = #{userId} and task_id=#{taskId}
+    </select>
+
+
+
+        
+    <insert id="insertLeavedemo" parameterType="Leavedemo">
+        insert into leavedemo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="title != null  and title != ''">title,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="pic != null  and pic != ''">pic,</if>
+            <if test="starttime != null ">starttime,</if>
+            <if test="endtime != null ">endtime,</if>
+            <if test="instanceId != null  and instanceId != ''">instance_id,</if>
+            <if test="runstatus != null  and runstatus != ''">runstatus,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="title != null  and title != ''">#{title},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="pic != null  and pic != ''">#{pic},</if>
+            <if test="starttime != null ">#{starttime},</if>
+            <if test="endtime != null ">#{endtime},</if>
+            <if test="instanceId != null  and instanceId != ''">#{instanceId},</if>
+            <if test="runstatus != null  and runstatus != ''">#{runstatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLeavedemo" parameterType="Leavedemo">
+        update leavedemo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null  and title != ''">title = #{title},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="pic != null  and pic != ''">pic = #{pic},</if>
+            <if test="starttime != null ">starttime = #{starttime},</if>
+            <if test="endtime != null ">endtime = #{endtime},</if>
+            <if test="instanceId != null  and instanceId != ''">instance_id = #{instanceId},</if>
+            <if test="runstatus != null  and runstatus != ''">runstatus = #{runstatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLeavedemoById" parameterType="String">
+        delete from leavedemo where id = #{id}
+    </delete>
+
+    <delete id="deleteLeavedemoByIds" parameterType="String">
+        delete from leavedemo where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+
+    
+</mapper>

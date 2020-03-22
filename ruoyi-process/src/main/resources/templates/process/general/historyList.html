@@ -74,19 +74,10 @@
 		        {
 		            field: 'startTime',
 		            title: '开始时间'
-		        },
-						{
-							field: 'endTime',
-							title: '结束时间'
-						},
-						{
-							field: 'durationInMillis',
-							title: '耗时',
-							formatter: function(value, row, index) {
-								if (!value) return '未知';
-								return $.common.formatTotalDateSub(value / 1000);
-							}
-						}]
+		        },{
+						field: 'endTime',
+						title: '结束时间'
+			  }]
 		    };
 		    $.table.init(options);
 		});

@@ -12,12 +12,7 @@ import com.ruoyi.process.definition.service.IProcessDefinitionService;
 import com.ruoyi.process.general.mapper.ProcessMapper;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.mapper.SysUserMapper;
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
-import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.ProcessDefinitionQuery;
+import org.activiti.engine.*;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +50,9 @@ public class ProcessDefinitionService implements IProcessDefinitionService {
 
     @Autowired
     private ProcessDefinitionMapper processDefinitionMapper;
+
+    @Autowired
+    private ProcessEngine processEngine;
 
 	@Transactional
     public void startProcess(String assignee) {
@@ -162,5 +160,86 @@ public class ProcessDefinitionService implements IProcessDefinitionService {
         }
         return counter;
     }
+
+    /***
+     * 启动流程(详细补充)
+     */
+    @Transactional
+    public HashMap startProcess(String id, String defKey, Map<String, Object> var){
+        HashMap datamap=new HashMap();
+        try {
+            if(var==null){
+                var = new HashMap<String, Object>();
+            }
+            org.activiti.engine.repository.ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(defKey).latestVersion().singleResult();
+            if (processDefinition==null){
+                datamap.put("code","500");
+                datamap.put("msg","流程未部署！请先部署流程！");
+                return datamap;
+            }else{
+                if (!processDefinition.isSuspended()){
+                    ProcessInstance procIns = runtimeService.startProcessInstanceByKey(defKey,id,var);
+                    datamap.put("code","200");
+                    datamap.put("msg","流程启动成功");
+                    datamap.put("procInsId",procIns.getId());
+                    return datamap;
+                }else{
+                    datamap.put("code","500");
+                    datamap.put("msg","流程启动失败");
+                    return datamap;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            datamap.put("code","500");
+            datamap.put("msg","流程部署失败");
+            return datamap;
+        }
+    }
+
+    /**
+     * 签收流程
+     * @param taskid
+     * @param user_id
+     */
+    @Transactional
+    public void caim(String taskid,String user_id){
+        taskService.claim(taskid,user_id);
+    }
+
+
+    /***
+     * 完成任务(补充)
+     */
+    @Transactional
+    public void completeTask(String taskid, Map<String,Object> var){
+        if(var!=null){
+            var = new HashMap<String,Object>();
+        }
+        processEngine.getTaskService().complete(taskid, var);
+    }
+
+    /**
+     * 完成任务补充
+     * @param taskid
+     * @param insid
+     * @param comment
+     * @param var
+     */
+    @Transactional
+    public void completeTask(String taskid,String insid, String comment, Map<String,Object> var){
+        TaskService service = processEngine.getTaskService();
+        if(!StringUtils.isEmpty(insid)&&!StringUtils.isEmpty(comment)){
+            service.addComment(taskid, insid, comment);
+        }
+        if(var==null){
+            var = new HashMap<String,Object>();
+        }
+        service.complete(taskid, var);
+    }
+
+
+
+
 
 }

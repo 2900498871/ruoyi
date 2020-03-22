@@ -294,45 +294,15 @@ public class BizLeaveServiceImpl implements IBizLeaveService {
      * @return
      */
     @Override
-    public List<BizLeaveVo> findDoneTasks(BizLeaveVo bizLeave, String userId) {
+    public List<HistoricTaskInstance> findDoneTasks(String userId) {
         List<BizLeaveVo> results = new ArrayList<>();
         List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
-                .processDefinitionKey("leave")
                 .taskAssignee(userId)
                 .finished()
                 .orderByHistoricTaskInstanceEndTime()
                 .desc()
                 .list();
-
-        // 根据流程的业务ID查询实体并关联
-        for (HistoricTaskInstance instance : list) {
-            String processInstanceId = instance.getProcessInstanceId();
-
-            // 条件过滤 1
-            if (StringUtils.isNotBlank(bizLeave.getInstanceId()) && !bizLeave.getInstanceId().equals(processInstanceId)) {
-                continue;
-            }
-
-            HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-
-            String businessKey = processInstance.getBusinessKey();
-            BizLeaveVo leave2 = bizLeaveMapper.selectBizLeaveById(new Long(businessKey));
-
-            // 条件过滤 2
-            if (StringUtils.isNotBlank(bizLeave.getType()) && !bizLeave.getType().equals(leave2.getType())) {
-                continue;
-            }
-
-            leave2.setTaskId(instance.getId());
-            leave2.setTaskName(instance.getName());
-            leave2.setDoneTime(instance.getEndTime());
-
-            SysUser sysUser = userMapper.selectUserByLoginName(leave2.getApplyUser());
-            leave2.setApplyUserName(sysUser.getUserName());
-
-            results.add(leave2);
-        }
-        return results;
+        return list;
     }
 
 }
