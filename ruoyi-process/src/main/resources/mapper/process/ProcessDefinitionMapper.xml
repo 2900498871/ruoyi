@@ -68,6 +68,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <delete id="deleteAssign" parameterType="TaskAssign">
         delete from task_assign where assign_id = #{assignId} and data_type=#{datatype}
     </delete>
+
+    <!--根据角色删除流程角色-->
+    <delete id="deleteAssignByRoleId" parameterType="Long">
+        delete from task_assign where assign_id = #{assignId} and data_type='01'
+    </delete>
+
+    <delete id="deleteAssignByRoles" parameterType="Long">
+        delete from task_assign where data_type='01' and
+        assign_id in
+        <foreach collection="array" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+        assign_id = #{assignId}
+    </delete>
+
     
     <insert id="insertAssign" parameterType="TaskAssign">
         insert into task_assign

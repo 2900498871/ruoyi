@@ -74,4 +74,18 @@ public interface ProcessDefinitionMapper
      */
     public List<VTasklist> selectTaskByUserTodo(VTasklist vTasklist);
 
+
+    /**
+     * 删除角色的同时删除assign
+     * @param roleId
+     */
+    public void  deleteAssignByRoleId(Long roleId);
+
+
+    /**
+     * 删除角色的同时删除assign
+     * @param roleId
+     */
+    public void  deleteAssignByRoles(Long[] roleId);
+
 }

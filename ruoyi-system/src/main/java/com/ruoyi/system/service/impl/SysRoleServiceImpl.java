@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class SysRoleServiceImpl implements ISysRoleService
 
     @Autowired
     private SysRoleDeptMapper roleDeptMapper;
+
 
     /**
      * 根据条件分页查询角色数据
@@ -135,6 +137,10 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public boolean deleteRoleById(Long roleId)
     {
+        //删除角色的同时删除角色-菜单
+        roleMenuMapper.deleteRoleMenuByRoleId(roleId);
+
+
         return roleMapper.deleteRoleById(roleId) > 0 ? true : false;
     }
 
@@ -157,6 +163,10 @@ public class SysRoleServiceImpl implements ISysRoleService
                 throw new BusinessException(String.format("%1$s已分配,不能删除", role.getRoleName()));
             }
         }
+        //删除角色的同时删除角色-菜单
+        roleMenuMapper.deleteRoleMenu(roleIds);
+
+
         return roleMapper.deleteRoleByIds(roleIds);
     }
 
