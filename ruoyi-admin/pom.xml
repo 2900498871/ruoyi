@@ -91,12 +91,12 @@
 
     <build>
         <plugins>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.1.1.RELEASE</version>
                 <configuration>
-					<fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
+					<fork>true</fork> &lt;!&ndash; 如果没有该配置，devtools不会生效 &ndash;&gt;
 				</configuration>
                 <executions>
                     <execution>
@@ -105,7 +105,26 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>-->
+
+            <!--打jar包的配置-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>                     <!-- 指定该Main Class为全局的唯一入口 -->
+                    <mainClass>com.ruoyi.RuoYiApplication</mainClass>
+                    <layout>ZIP</layout>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+
+            <!--打jar 包-->
             <plugin>   
                 <groupId>org.apache.maven.plugins</groupId>   
                 <artifactId>maven-war-plugin</artifactId>   
@@ -114,7 +133,8 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>${project.artifactId}</warName>
                 </configuration>   
-		   </plugin>   
+		   </plugin>
+
         </plugins>
         <finalName>${project.artifactId}</finalName>
     </build>

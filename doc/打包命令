@@ -1,0 +1,5 @@
+打jar包的语句：
+mvn clean install -Dmaven.test.skip
+
+运行jar包的语句：
+java -jar solo.jar
