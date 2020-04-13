@@ -3,3 +3,6 @@ mvn clean install -Dmaven.test.skip
 
 运行jar包的语句：
 java -jar solo.jar
+
+解决流程乱码的问题
+java -Dfile.encoding=utf-8 -jar xxx.jar
