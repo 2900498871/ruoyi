@@ -126,7 +126,10 @@ public class MailUtils implements java.io.Serializable {
          String subject = "eml with Image"; String content =
          "这是一封邮件正文带图片<img width=\"60px\" src=\"http://localhost:8080/images/logo-M301-161X105.png\" />的邮件";
           String[] tos = { "2900498871@qq.com" };
-         mailSender.sendMessage(tos, subject, "123123");
+        // mailSender.sendMessage(tos, subject, "123123");
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        mailSender.sendHTML("测试邮件","测试邮件2",tos,sb.toString());
 
     }
 
